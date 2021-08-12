@@ -1,0 +1,26 @@
+name: "dispatch-others-workflows"
+description: "Trigger github actions in multiple other repositories"
+author: "goccha"
+inputs:
+  token:
+    description: "github token"
+    required: true
+  type:
+    description: "event type"
+    required: true
+  json-payload:
+    description: "json format payload"
+    required: false
+outputs:
+  json-body:
+    description: "json body"
+runs:
+  using: "docker"
+  image: "docker://ghcr.io/goccha/dispatch-others-workflows:v0.0.1"
+  args:
+    - --token
+    - ${{ inputs.token }}
+    - --event-type
+    - ${{ inputs.type }}
+    - --payload
+    - ${{ inputs.json-payload }}

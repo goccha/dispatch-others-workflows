@@ -1,0 +1,52 @@
+name: Build and Push
+
+on:
+  push:
+    tags:
+      - v*
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'release tag'
+        required: true
+        default: v0.0.1
+jobs:
+  build-and-push:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+
+    steps:
+      # tag名を変数化
+      - name: Get the version (tag)
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo ::set-output name=VERSION::$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
+          else
+            echo ::set-output name=VERSION::$(echo ${{ github.event.inputs.tag }})
+          fi
+
+      - name: Get image tag
+        id: get_image_tag
+        run: echo ::set-output name=IMAGE_TAG::$(echo ${{ steps.get_version.outputs.VERSION }} | sed -e "s#/#_#g")
+
+      - uses: actions/checkout@v2
+        with:
+          ref: refs/tags/${{ steps.get_version.outputs.VERSION }}
+          token: ${{ github.token }}
+
+      - name: Log in to GitHub Docker Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - name: Build container image
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: |
+            ghcr.io/goccha/dispatch-others-workflows:${{ steps.get_image_tag.outputs.IMAGE_TAG }}
+            ghcr.io/goccha/dispatch-others-workflows:latest
