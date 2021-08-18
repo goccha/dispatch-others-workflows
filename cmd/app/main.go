@@ -20,7 +20,7 @@ var opt = &Option{}
 
 func init() {
 	flag.StringVar(&opt.Token, "token", "", "github token")
-	flag.StringVar(&opt.EventType, "event type", "", "event type")
+	flag.StringVar(&opt.EventType, "event-type", "", "event type")
 	flag.StringVar(&opt.Payload, "payload", "", "payload")
 	flag.Parse()
 }

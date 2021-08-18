@@ -16,7 +16,7 @@ outputs:
     description: "json body"
 runs:
   using: "docker"
-  image: "docker://ghcr.io/goccha/dispatch-others-workflows:v0.0.1"
+  image: "docker://ghcr.io/goccha/dispatch-others-workflows:v0.0.2"
   args:
     - --token
     - ${{ inputs.token }}
